@@ -8,6 +8,7 @@ import {
   Flag,
   Sparkles,
   HelpCircle,
+  AlertCircle,
   LayoutGrid,
   Check,
   X,
@@ -81,9 +82,28 @@ export const StudySessionView: React.FC<StudySessionViewProps> = ({
       setSelectedOptionIds(existingAnswer.selectedOptionIds || []);
       setTfAnswers(existingAnswer.tfAnswers || {});
       setDdMatches(existingAnswer.ddMatches || {});
-      setFeedbackMessage(
-        existingAnswer.isCorrect ? 'Chính xác! ✨' : 'Hãy ghi nhớ đáp án đúng này nhé 💪'
-      );
+
+      if (currentQ.type === 'multiple_choice') {
+        const correct = currentQ.correctOptionIds || [];
+        const sel = existingAnswer.selectedOptionIds || [];
+        const selCorrect = sel.filter((id) => correct.includes(id));
+        const selWrong = sel.filter((id) => !correct.includes(id));
+        const missing = correct.filter((id) => !sel.includes(id));
+
+        if (selWrong.length === 0 && missing.length === 0) {
+          setFeedbackMessage(existingAnswer.isCorrect ? 'Chính xác! ✨' : 'Hãy ghi nhớ đáp án đúng này nhé 💪');
+        } else if (selCorrect.length > 0 && selWrong.length === 0 && missing.length > 0) {
+          setFeedbackMessage('Đúng một phần, chưa đầy đủ');
+        } else if (selCorrect.length > 0 && selWrong.length > 0) {
+          setFeedbackMessage('Chưa chính xác (Có đáp án chọn sai)');
+        } else {
+          setFeedbackMessage('Chưa chính xác! Hãy ghi nhớ đáp án đúng này nhé 💪');
+        }
+      } else {
+        setFeedbackMessage(
+          existingAnswer.isCorrect ? 'Chính xác! ✨' : 'Hãy ghi nhớ đáp án đúng này nhé 💪'
+        );
+      }
     } else {
       setSelectedOptionIds([]);
       setTfAnswers({});
@@ -217,12 +237,34 @@ export const StudySessionView: React.FC<StudySessionViewProps> = ({
       newMap.set(currentQ.id, res.answer);
       setAnswersMap(newMap);
 
-      if (res.isCorrect) {
-        setFeedbackMessage(getRandomPraise());
-        soundService.playCorrect();
+      if (currentQ.type === 'multiple_choice') {
+        const correct = currentQ.correctOptionIds || [];
+        const sel = selectedOptionIds;
+        const selCorrect = sel.filter((id) => correct.includes(id));
+        const selWrong = sel.filter((id) => !correct.includes(id));
+        const missing = correct.filter((id) => !sel.includes(id));
+
+        if (selWrong.length === 0 && missing.length === 0) {
+          setFeedbackMessage(getRandomPraise());
+          soundService.playCorrect();
+        } else if (selCorrect.length > 0 && selWrong.length === 0 && missing.length > 0) {
+          setFeedbackMessage('Đúng một phần, chưa đầy đủ');
+          soundService.playIncorrect();
+        } else if (selCorrect.length > 0 && selWrong.length > 0) {
+          setFeedbackMessage('Chưa chính xác (Có đáp án chọn sai)');
+          soundService.playIncorrect();
+        } else {
+          setFeedbackMessage(getRandomEncouragement());
+          soundService.playIncorrect();
+        }
       } else {
-        setFeedbackMessage(getRandomEncouragement());
-        soundService.playIncorrect();
+        if (res.isCorrect) {
+          setFeedbackMessage(getRandomPraise());
+          soundService.playCorrect();
+        } else {
+          setFeedbackMessage(getRandomEncouragement());
+          soundService.playIncorrect();
+        }
       }
     } catch (err) {
       console.error('Lỗi khi chấm câu trả lời:', err);
@@ -395,10 +437,28 @@ export const StudySessionView: React.FC<StudySessionViewProps> = ({
                 let border = '1px solid var(--border-strong)';
 
                 if (ans) {
+                  const qItem = questions[idx];
+                  const isPartiallyCorrect =
+                    qItem.type === 'multiple_choice' &&
+                    !ans.isCorrect &&
+                    (() => {
+                      const corr = qItem.correctOptionIds || [];
+                      const sel = ans.selectedOptionIds || [];
+                      return (
+                        sel.length > 0 &&
+                        sel.every((id) => corr.includes(id)) &&
+                        sel.length < corr.length
+                      );
+                    })();
+
                   if (ans.isCorrect) {
                     bg = 'var(--success-bg)';
                     color = 'var(--success-text)';
                     border = '1px solid var(--success-border)';
+                  } else if (isPartiallyCorrect) {
+                    bg = 'var(--warning-bg)';
+                    color = 'var(--warning)';
+                    border = '1px solid var(--warning-border)';
                   } else {
                     bg = 'var(--error-bg)';
                     color = 'var(--error-text)';
@@ -482,34 +542,196 @@ export const StudySessionView: React.FC<StudySessionViewProps> = ({
               {currentQ.options.map((opt) => {
                 const isSelected = selectedOptionIds.includes(opt.id);
                 const isGraded = Boolean(existingAnswer);
-                const isCorrectAnswer = isGraded && (currentQ.correctOptionIds || []).includes(opt.id);
-                const isIncorrectChoice = isGraded && isSelected && !(currentQ.correctOptionIds || []).includes(opt.id);
 
                 let cardBg = 'var(--bg-secondary)';
                 let borderColor = 'var(--border-subtle)';
                 let textColor = 'var(--text-primary)';
+                let circleBg = 'var(--bg-tertiary)';
+                let circleColor = 'var(--text-secondary)';
+                let circleBorder = 'none';
+                let trailingIcon: React.ReactNode = null;
 
                 if (!isGraded) {
                   if (isSelected) {
                     cardBg = 'var(--primary-light)';
                     borderColor = 'var(--primary)';
                     textColor = 'var(--primary)';
+                    circleBg = 'var(--primary)';
+                    circleColor = '#ffffff';
                   }
-                } else {
+                } else if (currentQ.type === 'single_choice') {
+                  const isCorrectAnswer = (currentQ.correctOptionIds || []).includes(opt.id);
+                  const isIncorrectChoice = isSelected && !isCorrectAnswer;
+
                   if (isCorrectAnswer) {
                     cardBg = 'var(--success-bg)';
                     borderColor = 'var(--success)';
                     textColor = 'var(--success-text)';
+                    circleBg = 'var(--success)';
+                    circleColor = '#ffffff';
+                    trailingIcon = <CheckCircle2 size={20} color="var(--success)" />;
                   } else if (isIncorrectChoice) {
                     cardBg = 'var(--error-bg)';
                     borderColor = 'var(--error)';
                     textColor = 'var(--error-text)';
+                    circleBg = 'var(--error)';
+                    circleColor = '#ffffff';
+                    trailingIcon = <XCircle size={20} color="var(--error)" />;
                   } else {
                     cardBg = 'var(--bg-primary)';
                     borderColor = 'var(--border-subtle)';
                     textColor = 'var(--text-muted)';
                   }
+                } else {
+                  // currentQ.type === 'multiple_choice'
+                  const correctIds = currentQ.correctOptionIds || [];
+                  const selIds = selectedOptionIds;
+                  const selCorrect = selIds.filter((id) => correctIds.includes(id));
+                  const selWrong = selIds.filter((id) => !correctIds.includes(id));
+                  const missingCorrect = correctIds.filter((id) => !selIds.includes(id));
+
+                  const isFullCorrect = selWrong.length === 0 && missingCorrect.length === 0;
+                  const isPartialCorrect = selCorrect.length > 0 && selWrong.length === 0 && missingCorrect.length > 0;
+                  const isIncorrectWithCorrect = selCorrect.length > 0 && selWrong.length > 0;
+                  const isKeyCorrect = correctIds.includes(opt.id);
+
+                  if (isFullCorrect) {
+                    if (isKeyCorrect) {
+                      cardBg = 'var(--success-bg)';
+                      borderColor = 'var(--success)';
+                      textColor = 'var(--success-text)';
+                      circleBg = 'var(--success)';
+                      circleColor = '#ffffff';
+                      trailingIcon = <CheckCircle2 size={20} color="var(--success)" />;
+                    } else {
+                      cardBg = 'var(--bg-primary)';
+                      borderColor = 'var(--border-subtle)';
+                      textColor = 'var(--text-muted)';
+                    }
+                  } else if (isPartialCorrect) {
+                    if (isSelected && isKeyCorrect) {
+                      // Đã chọn đúng một phần
+                      cardBg = 'var(--warning-bg)';
+                      borderColor = 'var(--warning)';
+                      textColor = 'var(--text-primary)';
+                      circleBg = 'var(--warning)';
+                      circleColor = '#ffffff';
+                      trailingIcon = (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexShrink: 0 }}>
+                          <span className="badge badge-warning" style={{ fontSize: '0.72rem', textTransform: 'none' }}>
+                            Đúng một phần
+                          </span>
+                          <CheckCircle2 size={20} color="var(--warning)" />
+                        </div>
+                      );
+                    } else if (!isSelected && isKeyCorrect) {
+                      // Đáp án đúng còn thiếu
+                      cardBg = 'var(--bg-secondary)';
+                      borderColor = 'var(--success)';
+                      circleBorder = '1.5px dashed var(--success)';
+                      textColor = 'var(--text-primary)';
+                      trailingIcon = (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexShrink: 0 }}>
+                          <span className="badge badge-success" style={{ fontSize: '0.72rem', textTransform: 'none' }}>
+                            Đáp án đúng còn thiếu
+                          </span>
+                          <Check size={18} color="var(--success)" />
+                        </div>
+                      );
+                    } else {
+                      cardBg = 'var(--bg-primary)';
+                      borderColor = 'var(--border-subtle)';
+                      textColor = 'var(--text-muted)';
+                    }
+                  } else if (isIncorrectWithCorrect) {
+                    if (isSelected && !isKeyCorrect) {
+                      // Lựa chọn sai
+                      cardBg = 'var(--error-bg)';
+                      borderColor = 'var(--error)';
+                      textColor = 'var(--error-text)';
+                      circleBg = 'var(--error)';
+                      circleColor = '#ffffff';
+                      trailingIcon = (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexShrink: 0 }}>
+                          <span className="badge" style={{ background: 'var(--error-bg)', color: 'var(--error-text)', border: '1px solid var(--error-border)', fontSize: '0.72rem', textTransform: 'none' }}>
+                            Lựa chọn sai
+                          </span>
+                          <XCircle size={20} color="var(--error)" />
+                        </div>
+                      );
+                    } else if (isSelected && isKeyCorrect) {
+                      // Đã chọn đúng
+                      cardBg = 'var(--success-bg)';
+                      borderColor = 'var(--success-border)';
+                      textColor = 'var(--success-text)';
+                      circleBg = 'var(--success)';
+                      circleColor = '#ffffff';
+                      trailingIcon = (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexShrink: 0 }}>
+                          <span className="badge badge-success" style={{ fontSize: '0.72rem', textTransform: 'none' }}>
+                            Đã chọn đúng
+                          </span>
+                          <CheckCircle2 size={20} color="var(--success)" />
+                        </div>
+                      );
+                    } else if (!isSelected && isKeyCorrect) {
+                      // Đáp án đúng còn thiếu
+                      cardBg = 'var(--bg-secondary)';
+                      borderColor = 'var(--success)';
+                      circleBorder = '1.5px dashed var(--success)';
+                      textColor = 'var(--text-primary)';
+                      trailingIcon = (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexShrink: 0 }}>
+                          <span className="badge badge-success" style={{ fontSize: '0.72rem', textTransform: 'none' }}>
+                            Đáp án đúng còn thiếu
+                          </span>
+                          <Check size={18} color="var(--success)" />
+                        </div>
+                      );
+                    } else {
+                      cardBg = 'var(--bg-primary)';
+                      borderColor = 'var(--border-subtle)';
+                      textColor = 'var(--text-muted)';
+                    }
+                  } else {
+                    // Chọn hoàn toàn sai
+                    if (isSelected && !isKeyCorrect) {
+                      cardBg = 'var(--error-bg)';
+                      borderColor = 'var(--error)';
+                      textColor = 'var(--error-text)';
+                      circleBg = 'var(--error)';
+                      circleColor = '#ffffff';
+                      trailingIcon = (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexShrink: 0 }}>
+                          <span className="badge" style={{ background: 'var(--error-bg)', color: 'var(--error-text)', border: '1px solid var(--error-border)', fontSize: '0.72rem', textTransform: 'none' }}>
+                            Lựa chọn sai
+                          </span>
+                          <XCircle size={20} color="var(--error)" />
+                        </div>
+                      );
+                    } else if (!isSelected && isKeyCorrect) {
+                      cardBg = 'var(--success-bg)';
+                      borderColor = 'var(--success)';
+                      textColor = 'var(--success-text)';
+                      circleBg = 'var(--success)';
+                      circleColor = '#ffffff';
+                      trailingIcon = (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexShrink: 0 }}>
+                          <span className="badge badge-success" style={{ fontSize: '0.72rem', textTransform: 'none' }}>
+                            Đáp án đúng
+                          </span>
+                          <CheckCircle2 size={20} color="var(--success)" />
+                        </div>
+                      );
+                    } else {
+                      cardBg = 'var(--bg-primary)';
+                      borderColor = 'var(--border-subtle)';
+                      textColor = 'var(--text-muted)';
+                    }
+                  }
                 }
+
+                const isBorderDashed = isGraded && currentQ.type === 'multiple_choice' && !isSelected && (currentQ.correctOptionIds || []).includes(opt.id) && !existingAnswer?.isCorrect;
 
                 return (
                   <div
@@ -522,7 +744,7 @@ export const StudySessionView: React.FC<StudySessionViewProps> = ({
                       padding: '1rem 1.25rem',
                       borderRadius: 'var(--radius-md)',
                       background: cardBg,
-                      border: `1.5px solid ${borderColor}`,
+                      border: isBorderDashed ? `1.5px dashed ${borderColor}` : `1.5px solid ${borderColor}`,
                       cursor: isGraded ? 'default' : 'pointer',
                       transition: 'all var(--transition-fast)',
                       userSelect: 'none'
@@ -532,8 +754,9 @@ export const StudySessionView: React.FC<StudySessionViewProps> = ({
                       width: '1.9rem',
                       height: '1.9rem',
                       borderRadius: '50%',
-                      background: isSelected || isCorrectAnswer ? 'currentColor' : 'var(--bg-tertiary)',
-                      color: isSelected || isCorrectAnswer ? '#ffffff' : 'var(--text-secondary)',
+                      background: circleBg,
+                      color: circleColor,
+                      border: circleBorder,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -541,25 +764,16 @@ export const StudySessionView: React.FC<StudySessionViewProps> = ({
                       fontSize: '0.85rem',
                       flexShrink: 0
                     }}>
-                      {isSelected || isCorrectAnswer ? (
-                        <span style={{ color: cardBg === 'var(--success-bg)' ? 'var(--success-text)' : (cardBg === 'var(--error-bg)' ? 'var(--error-text)' : '#ffffff') }}>
-                          {opt.id}
-                        </span>
-                      ) : opt.id}
+                      {opt.id}
                     </div>
 
                     <div style={{ flex: 1, paddingTop: '0.15rem' }}>
-                      <span style={{ fontSize: '1rem', lineHeight: 1.5, color: textColor, fontWeight: isSelected || isCorrectAnswer ? 600 : 400 }}>
+                      <span style={{ fontSize: '1rem', lineHeight: 1.5, color: textColor, fontWeight: isSelected || isGraded ? 600 : 400 }}>
                         {opt.text}
                       </span>
                     </div>
 
-                    {isGraded && (
-                      <div style={{ flexShrink: 0, paddingTop: '0.15rem' }}>
-                        {isCorrectAnswer && <CheckCircle2 size={20} color="var(--success)" />}
-                        {isIncorrectChoice && <XCircle size={20} color="var(--error)" />}
-                      </div>
-                    )}
+                    {trailingIcon}
                   </div>
                 );
               })}
@@ -833,32 +1047,146 @@ export const StudySessionView: React.FC<StudySessionViewProps> = ({
               style={{
                 padding: '1.15rem 1.4rem',
                 borderRadius: 'var(--radius-md)',
-                background: existingAnswer.isCorrect ? 'var(--success-bg)' : 'var(--bg-tertiary)',
-                border: `1px solid ${existingAnswer.isCorrect ? 'var(--success-border)' : 'var(--border-subtle)'}`,
+                background: (() => {
+                  if (currentQ.type === 'multiple_choice') {
+                    const corr = currentQ.correctOptionIds || [];
+                    const sel = existingAnswer.selectedOptionIds || [];
+                    const selCorr = sel.filter((id) => corr.includes(id));
+                    const selWr = sel.filter((id) => !corr.includes(id));
+                    const missing = corr.filter((id) => !sel.includes(id));
+                    if (existingAnswer.isCorrect) return 'var(--success-bg)';
+                    if (selCorr.length > 0 && selWr.length === 0 && missing.length > 0) return 'var(--warning-bg)';
+                    return 'var(--error-bg)';
+                  }
+                  return existingAnswer.isCorrect ? 'var(--success-bg)' : 'var(--bg-tertiary)';
+                })(),
+                border: (() => {
+                  if (currentQ.type === 'multiple_choice') {
+                    const corr = currentQ.correctOptionIds || [];
+                    const sel = existingAnswer.selectedOptionIds || [];
+                    const selCorr = sel.filter((id) => corr.includes(id));
+                    const selWr = sel.filter((id) => !corr.includes(id));
+                    const missing = corr.filter((id) => !sel.includes(id));
+                    if (existingAnswer.isCorrect) return '1px solid var(--success-border)';
+                    if (selCorr.length > 0 && selWr.length === 0 && missing.length > 0) return '1px solid var(--warning-border)';
+                    return '1px solid var(--error-border)';
+                  }
+                  return `1px solid ${existingAnswer.isCorrect ? 'var(--success-border)' : 'var(--border-subtle)'}`;
+                })(),
                 marginBottom: '1.5rem',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.75rem'
               }}
             >
-              {existingAnswer.isCorrect ? (
-                <Sparkles size={22} color="var(--success)" />
-              ) : (
-                <HelpCircle size={22} color="var(--warning)" />
-              )}
-              <div>
+              {(() => {
+                if (currentQ.type === 'multiple_choice') {
+                  const corr = currentQ.correctOptionIds || [];
+                  const sel = existingAnswer.selectedOptionIds || [];
+                  const selCorr = sel.filter((id) => corr.includes(id));
+                  const selWr = sel.filter((id) => !corr.includes(id));
+                  const missing = corr.filter((id) => !sel.includes(id));
+                  if (existingAnswer.isCorrect) {
+                    return <Sparkles size={22} color="var(--success)" />;
+                  }
+                  if (selCorr.length > 0 && selWr.length === 0 && missing.length > 0) {
+                    return <AlertCircle size={22} color="var(--warning)" />;
+                  }
+                  return <XCircle size={22} color="var(--error)" />;
+                }
+                return existingAnswer.isCorrect ? (
+                  <Sparkles size={22} color="var(--success)" />
+                ) : (
+                  <HelpCircle size={22} color="var(--warning)" />
+                );
+              })()}
+              <div style={{ flex: 1 }}>
                 <p style={{
                   fontWeight: 700,
                   fontSize: '0.98rem',
-                  color: existingAnswer.isCorrect ? 'var(--success-text)' : 'var(--text-primary)',
+                  color: (() => {
+                    if (currentQ.type === 'multiple_choice') {
+                      const corr = currentQ.correctOptionIds || [];
+                      const sel = existingAnswer.selectedOptionIds || [];
+                      const selCorr = sel.filter((id) => corr.includes(id));
+                      const selWr = sel.filter((id) => !corr.includes(id));
+                      const missing = corr.filter((id) => !sel.includes(id));
+                      if (existingAnswer.isCorrect) return 'var(--success-text)';
+                      if (selCorr.length > 0 && selWr.length === 0 && missing.length > 0) return 'var(--warning)';
+                      return 'var(--error-text)';
+                    }
+                    return existingAnswer.isCorrect ? 'var(--success-text)' : 'var(--text-primary)';
+                  })(),
                   margin: 0
                 }}>
                   {feedbackMessage}
                 </p>
-                {currentQ.explanation && (
-                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.35rem' }}>
-                    {currentQ.explanation}
-                  </p>
+
+                {currentQ.type === 'multiple_choice' ? (
+                  (() => {
+                    const corr = currentQ.correctOptionIds || [];
+                    const sel = existingAnswer.selectedOptionIds || [];
+                    const selCorr = sel.filter((id) => corr.includes(id));
+                    const selWr = sel.filter((id) => !corr.includes(id));
+                    const missing = corr.filter((id) => !sel.includes(id));
+
+                    if (existingAnswer.isCorrect) {
+                      return currentQ.explanation ? (
+                        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.35rem' }}>
+                          <strong>Lưu ý:</strong> {currentQ.explanation}
+                        </p>
+                      ) : null;
+                    }
+
+                    if (selCorr.length > 0 && selWr.length === 0 && missing.length > 0) {
+                      return (
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.35rem', lineHeight: 1.5 }}>
+                          <span>
+                            Bạn đã chọn đúng <strong>{selCorr.length}/{corr.length}</strong> đáp án ({selCorr.join(', ')}), nhưng vẫn còn thiếu đáp án đúng: <strong style={{ color: 'var(--success-text)' }}>{missing.join(', ')}</strong>.
+                          </span>
+                          {currentQ.explanation && (
+                            <span style={{ display: 'block', marginTop: '0.25rem' }}>
+                              <strong>Lưu ý:</strong> {currentQ.explanation}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    }
+
+                    if (selCorr.length > 0 && selWr.length > 0) {
+                      return (
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.35rem', lineHeight: 1.5 }}>
+                          <span>
+                            Bạn đã chọn đáp án chưa chính xác: <strong style={{ color: 'var(--error-text)' }}>{selWr.join(', ')}</strong>. Toàn bộ đáp án đúng là: <strong style={{ color: 'var(--success-text)' }}>{corr.join(', ')}</strong>.
+                          </span>
+                          {currentQ.explanation && (
+                            <span style={{ display: 'block', marginTop: '0.25rem' }}>
+                              <strong>Lưu ý:</strong> {currentQ.explanation}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.35rem', lineHeight: 1.5 }}>
+                        <span>
+                          Đáp án chính xác theo giáo trình: <strong style={{ color: 'var(--success-text)' }}>{corr.join(', ')}</strong>.
+                        </span>
+                        {currentQ.explanation && (
+                          <span style={{ display: 'block', marginTop: '0.25rem' }}>
+                            <strong>Lưu ý:</strong> {currentQ.explanation}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })()
+                ) : (
+                  currentQ.explanation && (
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.35rem' }}>
+                      {currentQ.explanation}
+                    </p>
+                  )
                 )}
               </div>
             </div>

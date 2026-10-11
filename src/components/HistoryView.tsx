@@ -289,40 +289,58 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                   {sessionAnswers.map((ans, idx) => {
                     const q = allQuestions.find((item) => item.id === ans.questionId);
-                    return (
-                      <div
-                        key={ans.questionId}
-                        style={{
-                          padding: '0.85rem 1rem',
-                          borderRadius: 'var(--radius-sm)',
-                          background: ans.isCorrect ? 'var(--success-bg)' : 'var(--error-bg)',
-                          border: `1px solid ${ans.isCorrect ? 'var(--success-border)' : 'var(--error-border)'}`,
-                          fontSize: '0.88rem'
-                        }}
-                      >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
-                          <span style={{ fontWeight: 700 }}>
-                            {idx + 1}. {q?.content || ans.questionId}
-                          </span>
-                          <span style={{ fontWeight: 700, color: ans.isCorrect ? 'var(--success-text)' : 'var(--error-text)' }}>
-                            {ans.isCorrect ? '✓ Đúng' : '✗ Sai'}
-                          </span>
-                        </div>
-                        <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
-                          {q?.type === 'true_false' ? (
-                            <span>Dạng Đúng / Sai: <strong>{ans.isCorrect ? 'Đạt toàn bộ mệnh đề' : 'Chưa đúng các mệnh đề'}</strong></span>
-                          ) : q?.type === 'drag_drop' ? (
-                            <span>Dạng Kéo thả / Nối: <strong>{ans.isCorrect ? 'Ghép chính xác hoàn toàn' : 'Vị trí ghép chưa đúng'}</strong></span>
-                          ) : (
-                            <span>
-                              Đáp án bạn chọn: <strong>{ans.selectedOptionIds?.join(', ') || 'Chưa chọn'}</strong> | Đáp án đúng: <strong>{q?.correctOptionIds?.join(', ')}</strong>
+                    const isPartial = q?.type === 'multiple_choice' && !ans.isCorrect && (() => {
+                        const corr = q?.correctOptionIds || [];
+                        const sel = ans.selectedOptionIds || [];
+                        return sel.length > 0 && sel.every((id) => corr.includes(id)) && sel.length < corr.length;
+                      })();
+
+                      let bg = ans.isCorrect ? 'var(--success-bg)' : 'var(--error-bg)';
+                      let border = `1px solid ${ans.isCorrect ? 'var(--success-border)' : 'var(--error-border)'}`;
+                      let statusText = ans.isCorrect ? '✓ Đúng' : '✗ Sai';
+                      let statusColor = ans.isCorrect ? 'var(--success-text)' : 'var(--error-text)';
+
+                      if (isPartial) {
+                        bg = 'var(--warning-bg)';
+                        border = '1px solid var(--warning-border)';
+                        statusText = '⚠ Đúng một phần';
+                        statusColor = 'var(--warning)';
+                      }
+
+                      return (
+                        <div
+                          key={ans.questionId}
+                          style={{
+                            padding: '0.85rem 1rem',
+                            borderRadius: 'var(--radius-sm)',
+                            background: bg,
+                            border,
+                            fontSize: '0.88rem'
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
+                            <span style={{ fontWeight: 700 }}>
+                              {idx + 1}. {q?.content || ans.questionId}
                             </span>
-                          )}
+                            <span style={{ fontWeight: 700, color: statusColor }}>
+                              {statusText}
+                            </span>
+                          </div>
+                          <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+                            {q?.type === 'true_false' ? (
+                              <span>Dạng Đúng / Sai: <strong>{ans.isCorrect ? 'Đạt toàn bộ mệnh đề' : 'Chưa đúng các mệnh đề'}</strong></span>
+                            ) : q?.type === 'drag_drop' ? (
+                              <span>Dạng Kéo thả / Nối: <strong>{ans.isCorrect ? 'Ghép chính xác hoàn toàn' : 'Vị trí ghép chưa đúng'}</strong></span>
+                            ) : (
+                              <span>
+                                Đáp án bạn chọn: <strong>{ans.selectedOptionIds?.join(', ') || 'Chưa chọn'}</strong>{isPartial ? ' (Đúng một phần)' : ''} | Đáp án đúng: <strong>{q?.correctOptionIds?.join(', ')}</strong>
+                              </span>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>

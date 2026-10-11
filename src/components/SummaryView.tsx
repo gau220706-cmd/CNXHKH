@@ -247,77 +247,111 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
                 const selectedSet = new Set(answer?.selectedOptionIds || []);
                 const correctSet = new Set(q.correctOptionIds);
 
-                return (
-                  <div
-                    key={q.id}
-                    style={{
-                      background: 'var(--bg-secondary)',
-                      padding: '1.35rem',
-                      borderRadius: 'var(--radius-md)',
-                      border: '1px solid var(--border-subtle)'
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                      <span style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                        Câu {idx + 1}
-                      </span>
-                      <span className="badge badge-warning" style={{ fontSize: '0.72rem' }}>
-                        Cần ôn lại
-                      </span>
-                    </div>
+                    const isPartial = q.type === 'multiple_choice' && (() => {
+                      const corr = q.correctOptionIds || [];
+                      const sel = Array.from(selectedSet);
+                      return sel.length > 0 && sel.every((id) => corr.includes(id)) && sel.length < corr.length;
+                    })();
 
-                    <p style={{ fontWeight: 700, fontSize: '1rem', marginBottom: '1rem', color: 'var(--text-primary)', lineHeight: 1.5 }}>
-                      {q.content}
-                    </p>
+                    return (
+                      <div
+                        key={q.id}
+                        style={{
+                          background: 'var(--bg-secondary)',
+                          padding: '1.35rem',
+                          borderRadius: 'var(--radius-md)',
+                          border: '1px solid var(--border-subtle)'
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                          <span style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                            Câu {idx + 1}
+                          </span>
+                          <span className="badge badge-warning" style={{ fontSize: '0.72rem' }}>
+                            {isPartial ? 'Đúng một phần (Chưa đầy đủ)' : 'Cần ôn lại'}
+                          </span>
+                        </div>
 
-                    {/* Hiển thị chi tiết theo từng loại câu hỏi */}
-                    {q.options && q.options.length > 0 && (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
-                        {q.options.map((opt) => {
-                          const isCorrect = correctSet.has(opt.id);
-                          const isSelected = selectedSet.has(opt.id);
+                        <p style={{ fontWeight: 700, fontSize: '1rem', marginBottom: '1rem', color: 'var(--text-primary)', lineHeight: 1.5 }}>
+                          {q.content}
+                        </p>
 
-                          let bg = 'var(--bg-primary)';
-                          let border = '1px solid var(--border-subtle)';
-                          let color = 'var(--text-secondary)';
+                        {/* Hiển thị chi tiết theo từng loại câu hỏi */}
+                        {q.options && q.options.length > 0 && (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
+                            {q.options.map((opt) => {
+                              const isCorrect = correctSet.has(opt.id);
+                              const isSelected = selectedSet.has(opt.id);
 
-                          if (isCorrect) {
-                            bg = 'var(--success-bg)';
-                            border = '1px solid var(--success-border)';
-                            color = 'var(--success-text)';
-                          } else if (isSelected) {
-                            bg = 'var(--error-bg)';
-                            border = '1px solid var(--error-border)';
-                            color = 'var(--error-text)';
-                          }
+                              let bg = 'var(--bg-primary)';
+                              let border = '1px solid var(--border-subtle)';
+                              let color = 'var(--text-secondary)';
+                              let statusLabel: React.ReactNode = null;
 
-                          return (
-                            <div
-                              key={opt.id}
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                padding: '0.65rem 0.95rem',
-                                borderRadius: 'var(--radius-sm)',
-                                background: bg,
-                                border,
-                                color,
-                                fontSize: '0.9rem'
-                              }}
-                            >
-                              <span>
-                                <strong>{opt.id}.</strong> {opt.text}
-                              </span>
-                              <span style={{ fontSize: '0.78rem', fontWeight: 700 }}>
-                                {isCorrect && '✓ Đáp án đúng'}
-                                {isSelected && !isCorrect && '✗ Bạn đã chọn'}
-                              </span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
+                              if (q.type === 'multiple_choice') {
+                                if (isCorrect && isSelected) {
+                                  if (isPartial) {
+                                    bg = 'var(--warning-bg)';
+                                    border = '1px solid var(--warning-border)';
+                                    color = 'var(--warning)';
+                                    statusLabel = '✓ Đúng một phần (Đã chọn)';
+                                  } else {
+                                    bg = 'var(--success-bg)';
+                                    border = '1px solid var(--success-border)';
+                                    color = 'var(--success-text)';
+                                    statusLabel = '✓ Đã chọn đúng';
+                                  }
+                                } else if (isCorrect && !isSelected) {
+                                  bg = 'var(--bg-secondary)';
+                                  border = '1.5px dashed var(--success)';
+                                  color = 'var(--success-text)';
+                                  statusLabel = '✓ Đáp án đúng còn thiếu';
+                                } else if (!isCorrect && isSelected) {
+                                  bg = 'var(--error-bg)';
+                                  border = '1px solid var(--error-border)';
+                                  color = 'var(--error-text)';
+                                  statusLabel = '✗ Bạn đã chọn sai';
+                                }
+                              } else {
+                                if (isCorrect) {
+                                  bg = 'var(--success-bg)';
+                                  border = '1px solid var(--success-border)';
+                                  color = 'var(--success-text)';
+                                  statusLabel = '✓ Đáp án đúng';
+                                } else if (isSelected) {
+                                  bg = 'var(--error-bg)';
+                                  border = '1px solid var(--error-border)';
+                                  color = 'var(--error-text)';
+                                  statusLabel = '✗ Bạn đã chọn';
+                                }
+                              }
+
+                              return (
+                                <div
+                                  key={opt.id}
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    padding: '0.65rem 0.95rem',
+                                    borderRadius: 'var(--radius-sm)',
+                                    background: bg,
+                                    border,
+                                    color,
+                                    fontSize: '0.9rem'
+                                  }}
+                                >
+                                  <span>
+                                    <strong>{opt.id}.</strong> {opt.text}
+                                  </span>
+                                  <span style={{ fontSize: '0.78rem', fontWeight: 700 }}>
+                                    {statusLabel}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
 
                     {/* True / False detail */}
                     {q.tfItems && q.tfItems.length > 0 && (
