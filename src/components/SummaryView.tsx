@@ -389,7 +389,12 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
                           const matchedIds = answer?.ddMatches?.[target.id] || [];
                           const correctTexts = (target.correctItemIds || []).map((id) => (q.ddItems || []).find((c) => c.id === id)?.text).filter(Boolean);
                           const userTexts = matchedIds.map((id) => (q.ddItems || []).find((c) => c.id === id)?.text).filter(Boolean);
-                          const isRight = matchedIds.length === target.correctItemIds.length && matchedIds.every((id) => target.correctItemIds.includes(id));
+                          const sortedUserTexts = [...userTexts].sort();
+                          const sortedCorrectTexts = [...correctTexts].sort();
+                          const isRight = matchedIds.length === target.correctItemIds.length && (
+                            matchedIds.every((id) => target.correctItemIds.includes(id)) ||
+                            (sortedUserTexts.length === sortedCorrectTexts.length && sortedUserTexts.every((t, i) => t === sortedCorrectTexts[i]))
+                          );
                           return (
                             <div
                               key={target.id}

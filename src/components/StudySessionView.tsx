@@ -27,6 +27,73 @@ interface StudySessionViewProps {
   onExitEarly: () => void;
 }
 
+// Đánh giá chi tiết câu hỏi kéo thả & ghép nối để phản hồi đúng trạng thái
+function getDragDropFeedback(
+  question: Question,
+  ddMatches: Record<string, string[]>,
+  isCorrectSession: boolean
+): string {
+  if (isCorrectSession) {
+    return 'Chính xác hoàn toàn! ✨';
+  }
+
+  const targets = question.ddTargets || [];
+  const itemsMap = new Map((question.ddItems || []).map((it) => [it.id, it.text]));
+
+  let hasMissing = false;
+  let hasMisplaced = false;
+  let hasExtra = false;
+
+  for (const t of targets) {
+    const userMatched = ddMatches[t.id] || [];
+    const expectedIds = t.correctItemIds || [];
+    const expectedTexts = expectedIds.map((id) => itemsMap.get(id) || id);
+
+    if (userMatched.length < expectedIds.length) {
+      hasMissing = true;
+    }
+
+    for (const chipId of userMatched) {
+      const chipText = itemsMap.get(chipId) || chipId;
+      const isCorrectForTarget =
+        expectedIds.includes(chipId) || expectedTexts.includes(chipText);
+      if (!isCorrectForTarget) {
+        const belongsToOther = targets.some(
+          (otherT) =>
+            otherT.id !== t.id &&
+            ((otherT.correctItemIds || []).includes(chipId) ||
+              (otherT.correctItemIds || []).map((id) => itemsMap.get(id) || id).includes(chipText))
+        );
+        if (belongsToOther) {
+          hasMisplaced = true;
+        } else {
+          hasExtra = true;
+        }
+      }
+    }
+  }
+
+  const allPlacedIds = new Set(Object.values(ddMatches).flat());
+  const allExpectedIds = targets.flatMap((t) => t.correctItemIds || []);
+  if (allExpectedIds.some((id) => !allPlacedIds.has(id))) {
+    hasMissing = true;
+  }
+
+  if (hasMisplaced && hasMissing) {
+    return 'Chưa chính xác (Có đáp án sai vị trí và còn vị trí chưa điền đủ)';
+  }
+  if (hasMisplaced) {
+    return 'Chưa chính xác (Có đáp án bị đặt sai vị trí)';
+  }
+  if (hasExtra) {
+    return 'Chưa chính xác (Có đáp án thừa không chính xác)';
+  }
+  if (hasMissing) {
+    return 'Chưa đầy đủ (Còn thiếu đáp án ở các vị trí)';
+  }
+  return 'Chưa chính xác! Hãy ghi nhớ đáp án đúng này nhé 💪';
+}
+
 export const StudySessionView: React.FC<StudySessionViewProps> = ({
   session,
   questions,
@@ -99,6 +166,13 @@ export const StudySessionView: React.FC<StudySessionViewProps> = ({
         } else {
           setFeedbackMessage('Chưa chính xác! Hãy ghi nhớ đáp án đúng này nhé 💪');
         }
+      } else if (currentQ.type === 'drag_drop') {
+        const msg = getDragDropFeedback(
+          currentQ,
+          existingAnswer.ddMatches || {},
+          existingAnswer.isCorrect
+        );
+        setFeedbackMessage(msg);
       } else {
         setFeedbackMessage(
           existingAnswer.isCorrect ? 'Chính xác! ✨' : 'Hãy ghi nhớ đáp án đúng này nhé 💪'
@@ -188,7 +262,15 @@ export const StudySessionView: React.FC<StudySessionViewProps> = ({
       for (const [tId, ids] of Object.entries(prev)) {
         updated[tId] = ids.filter((id) => id !== chipId);
       }
-      updated[targetId] = [...(updated[targetId] || []), chipId];
+      const target = currentQ?.ddTargets?.find((t) => t.id === targetId);
+      const isSingleSlot = target && target.correctItemIds.length === 1;
+
+      if (isSingleSlot && (updated[targetId] || []).length >= 1) {
+        // Thay thế thẻ cũ nếu ô chỉ yêu cầu 1 vị trí (thẻ cũ tự động quay về kho thẻ)
+        updated[targetId] = [chipId];
+      } else {
+        updated[targetId] = [...(updated[targetId] || []), chipId];
+      }
       return updated;
     });
     setSelectedChipId(null);
@@ -214,7 +296,7 @@ export const StudySessionView: React.FC<StudySessionViewProps> = ({
     }
     if (currentQ.type === 'drag_drop') {
       const targets = currentQ.ddTargets || [];
-      return targets.length > 0 && targets.every((t) => (ddMatches[t.id] || []).length > 0);
+      return targets.length > 0 && Object.values(ddMatches).some((ids) => ids.length > 0);
     }
     return false;
   };
@@ -255,6 +337,14 @@ export const StudySessionView: React.FC<StudySessionViewProps> = ({
           soundService.playIncorrect();
         } else {
           setFeedbackMessage(getRandomEncouragement());
+          soundService.playIncorrect();
+        }
+      } else if (currentQ.type === 'drag_drop') {
+        const msg = getDragDropFeedback(currentQ, ddMatches, res.isCorrect);
+        setFeedbackMessage(msg);
+        if (res.isCorrect) {
+          soundService.playCorrect();
+        } else {
           soundService.playIncorrect();
         }
       } else {
@@ -928,10 +1018,16 @@ export const StudySessionView: React.FC<StudySessionViewProps> = ({
                 {currentQ.ddTargets.map((target, idx) => {
                   const isGraded = Boolean(existingAnswer);
                   const matchedChipIds = ddMatches[target.id] || [];
+                  const itemsMap = new Map((currentQ.ddItems || []).map((c) => [c.id, c.text]));
+
+                  const targetExpectedTexts = (target.correctItemIds || []).map((id) => itemsMap.get(id) || id).sort();
+                  const targetMatchedTexts = matchedChipIds.map((id) => itemsMap.get(id) || id).sort();
+
                   const isTargetCorrect = isGraded && (
-                    matchedChipIds.length === target.correctItemIds.length &&
-                    matchedChipIds.every((id) => target.correctItemIds.includes(id))
+                    (matchedChipIds.length === target.correctItemIds.length && matchedChipIds.every((id) => target.correctItemIds.includes(id))) ||
+                    (targetMatchedTexts.length === targetExpectedTexts.length && targetMatchedTexts.every((t, i) => t === targetExpectedTexts[i]))
                   );
+                  const isMissingInTarget = isGraded && matchedChipIds.length < target.correctItemIds.length;
 
                   return (
                     <div
@@ -951,19 +1047,41 @@ export const StudySessionView: React.FC<StudySessionViewProps> = ({
                         padding: '1.1rem 1.25rem',
                         borderRadius: 'var(--radius-md)',
                         background: 'var(--bg-secondary)',
-                        border: isGraded ? (isTargetCorrect ? '1.5px solid var(--success-border)' : '1.5px solid var(--error-border)') : (selectedChipId ? '1.5px dashed var(--primary)' : '1px solid var(--border-subtle)'),
+                        border: isGraded
+                          ? isTargetCorrect
+                            ? '1.5px solid var(--success-border)'
+                            : '1.5px solid var(--error-border)'
+                          : selectedChipId
+                          ? '1.5px dashed var(--primary)'
+                          : '1px solid var(--border-subtle)',
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '0.65rem'
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
-                        <span style={{ fontWeight: 800, color: 'var(--primary)', flexShrink: 0 }}>
-                          Vị trí {idx + 1}:
-                        </span>
-                        <span style={{ fontSize: '0.95rem', lineHeight: 1.5, color: 'var(--text-primary)', flex: 1 }}>
-                          {target.prompt}
-                        </span>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.5rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', flex: 1 }}>
+                          <span style={{ fontWeight: 800, color: 'var(--primary)', flexShrink: 0 }}>
+                            Vị trí {idx + 1}:
+                          </span>
+                          <span style={{ fontSize: '0.95rem', lineHeight: 1.5, color: 'var(--text-primary)', flex: 1 }}>
+                            {target.prompt}
+                          </span>
+                        </div>
+                        {isGraded && (
+                          <span
+                            className={isTargetCorrect ? 'badge badge-primary' : 'badge badge-warning'}
+                            style={{
+                              fontSize: '0.72rem',
+                              flexShrink: 0,
+                              background: isTargetCorrect ? 'var(--success-bg)' : 'var(--error-bg)',
+                              color: isTargetCorrect ? 'var(--success-text)' : 'var(--error-text)',
+                              border: `1px solid ${isTargetCorrect ? 'var(--success-border)' : 'var(--error-border)'}`
+                            }}
+                          >
+                            {isTargetCorrect ? '✓ Đúng vị trí' : isMissingInTarget ? 'Thiếu đáp án' : 'Chưa chính xác'}
+                          </span>
+                        )}
                       </div>
 
                       {/* Drop Zone Box */}
@@ -981,23 +1099,84 @@ export const StudySessionView: React.FC<StudySessionViewProps> = ({
                         {matchedChipIds.map((chipId) => {
                           const chip = (currentQ.ddItems || []).find((c) => c.id === chipId);
                           if (!chip) return null;
+                          const chipText = chip.text;
+                          const isMatch = target.correctItemIds.includes(chip.id) ||
+                            target.correctItemIds.some((id) => itemsMap.get(id) === chipText);
+
+                          let tagLabel = '✓ Đúng';
+                          if (!isMatch) {
+                            const isMisplaced = (currentQ.ddTargets || []).some(
+                              (otherT) =>
+                                otherT.id !== target.id &&
+                                (otherT.correctItemIds.includes(chip.id) ||
+                                  otherT.correctItemIds.some((id) => itemsMap.get(id) === chipText))
+                            );
+                            tagLabel = isMisplaced ? '✗ Sai vị trí' : '✗ Thừa';
+                          }
+
+                          const isChipSelected = selectedChipId === chip.id;
+
                           return (
                             <span
                               key={chip.id}
+                              draggable={!isGraded}
+                              onDragStart={(e) => {
+                                if (!isGraded) e.dataTransfer.setData('text/plain', chip.id);
+                              }}
+                              onClick={(e) => {
+                                if (!isGraded) {
+                                  e.stopPropagation();
+                                  setSelectedChipId(isChipSelected ? null : chip.id);
+                                }
+                              }}
                               style={{
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 gap: '0.35rem',
                                 padding: '0.35rem 0.75rem',
                                 borderRadius: 'var(--radius-full)',
-                                background: isGraded ? (target.correctItemIds.includes(chip.id) ? 'var(--success-bg)' : 'var(--error-bg)') : 'var(--bg-secondary)',
-                                color: isGraded ? (target.correctItemIds.includes(chip.id) ? 'var(--success-text)' : 'var(--error-text)') : 'var(--primary)',
-                                border: '1px solid var(--border-strong)',
+                                background: isGraded
+                                  ? isMatch
+                                    ? 'var(--success-bg)'
+                                    : 'var(--error-bg)'
+                                  : isChipSelected
+                                  ? 'var(--primary)'
+                                  : 'var(--bg-secondary)',
+                                color: isGraded
+                                  ? isMatch
+                                    ? 'var(--success-text)'
+                                    : 'var(--error-text)'
+                                  : isChipSelected
+                                  ? '#ffffff'
+                                  : 'var(--primary)',
+                                border: `1px solid ${
+                                  isGraded
+                                    ? isMatch
+                                      ? 'var(--success-border)'
+                                      : 'var(--error-border)'
+                                    : isChipSelected
+                                    ? 'var(--primary)'
+                                    : 'var(--border-strong)'
+                                }`,
                                 fontWeight: 700,
-                                fontSize: '0.82rem'
+                                fontSize: '0.82rem',
+                                cursor: isGraded ? 'default' : 'grab',
+                                boxShadow: isChipSelected ? '0 0 0 2px var(--primary-light)' : 'none',
+                                transition: 'all 0.15s'
                               }}
                             >
                               <span>{chip.text}</span>
+                              {isGraded && (
+                                <span
+                                  style={{
+                                    fontSize: '0.72rem',
+                                    marginLeft: '3px',
+                                    fontWeight: 800
+                                  }}
+                                >
+                                  {tagLabel}
+                                </span>
+                              )}
                               {!isGraded && (
                                 <button
                                   type="button"
@@ -1005,13 +1184,15 @@ export const StudySessionView: React.FC<StudySessionViewProps> = ({
                                     e.stopPropagation();
                                     handleRemoveChipFromTarget(chip.id, target.id);
                                   }}
+                                  title="Gỡ thẻ về kho"
                                   style={{
                                     border: 'none',
                                     background: 'transparent',
                                     cursor: 'pointer',
-                                    color: 'var(--text-muted)',
+                                    color: isChipSelected ? '#ffffff' : 'var(--text-muted)',
                                     display: 'flex',
-                                    alignItems: 'center'
+                                    alignItems: 'center',
+                                    padding: 0
                                   }}
                                 >
                                   <X size={13} />
@@ -1029,8 +1210,20 @@ export const StudySessionView: React.FC<StudySessionViewProps> = ({
                       </div>
 
                       {isGraded && !isTargetCorrect && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                          <div style={{ fontSize: '0.82rem', color: 'var(--success)', fontWeight: 600 }}>
+                            Đáp án đúng: {(target.correctItemIds || []).map((id) => itemsMap.get(id)).filter(Boolean).join(', ')}
+                          </div>
+                          {isMissingInTarget && (
+                            <span style={{ fontSize: '0.75rem', color: 'var(--warning)', fontStyle: 'italic' }}>
+                              (Còn thiếu {target.correctItemIds.length - matchedChipIds.length} thẻ)
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      {isGraded && isTargetCorrect && (
                         <div style={{ fontSize: '0.82rem', color: 'var(--success)', fontWeight: 600 }}>
-                          Đáp án đúng: {(target.correctItemIds || []).map((id) => (currentQ.ddItems || []).find((c) => c.id === id)?.text).filter(Boolean).join(', ')}
+                          ✓ Vị trí này hoàn toàn chính xác!
                         </div>
                       )}
                     </div>

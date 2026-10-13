@@ -925,18 +925,6 @@
       {
         "id": "item-4",
         "text": "giai cấp vô sản"
-      },
-      {
-        "id": "item-5",
-        "text": "giai cấp công nhân"
-      },
-      {
-        "id": "item-6",
-        "text": "giải phóng con người"
-      },
-      {
-        "id": "item-7",
-        "text": "giai cấp cách mạng"
       }
     ],
     "ddTargets": [
@@ -944,21 +932,21 @@
         "id": "target-1",
         "prompt": "1. Thực hiện sự nghiệp giải phóng thế giới ấy, đó là sứ mệnh lịch sử của ______ hiện đại.",
         "correctItemIds": [
-          "item-5"
+          "item-2"
         ]
       },
       {
         "id": "target-2",
         "prompt": "2. Sứ mệnh lịch sử của giai cấp công nhân là ______ khỏi áp bức, bất công, bóc lột.",
         "correctItemIds": [
-          "item-6"
+          "item-1"
         ]
       },
       {
         "id": "target-3",
         "prompt": "3. Giai cấp công nhân là ______ và có tinh thần cách mạng triệt để.",
         "correctItemIds": [
-          "item-7"
+          "item-3"
         ]
       }
     ],
@@ -1046,18 +1034,6 @@
       {
         "id": "item-4",
         "text": "tầng lớp nhân dân"
-      },
-      {
-        "id": "item-5",
-        "text": "Đảng Cộng sản"
-      },
-      {
-        "id": "item-6",
-        "text": "tầng lớp nhân dân"
-      },
-      {
-        "id": "item-7",
-        "text": "tầng lớp trí thức"
       }
     ],
     "ddTargets": [
@@ -1065,21 +1041,21 @@
         "id": "target-1",
         "prompt": "1. Giai cấp công nhân Việt Nam là lực lượng nòng cốt của ______ Việt Nam.",
         "correctItemIds": [
-          "item-5"
+          "item-2"
         ]
       },
       {
         "id": "target-2",
         "prompt": "2. Giai cấp công nhân Việt Nam gắn bó mật thiết với các ______ trong xã hội.",
         "correctItemIds": [
-          "item-6"
+          "item-4"
         ]
       },
       {
         "id": "target-3",
         "prompt": "3. Giai cấp công nhân Việt Nam có mối quan hệ mật thiết với giai cấp nông dân và ______ trong xã hội.",
         "correctItemIds": [
-          "item-7"
+          "item-3"
         ]
       }
     ],
@@ -1121,8 +1097,12 @@
     "id": "q-01-037",
     "lessonId": "lesson-01",
     "type": "multiple_choice",
-    "content": "Chủ nghĩa xã hội khoa học ra đời dựa trên cơ sở của những tiền đề nào? (Chọn nhiều đáp án) A. Tiền đề tư tưởng lý luận",
+    "content": "Chủ nghĩa xã hội khoa học ra đời dựa trên cơ sở của những tiền đề nào? (Chọn nhiều đáp án)",
     "options": [
+      {
+        "id": "A",
+        "text": "Tiền đề tư tưởng lý luận"
+      },
       {
         "id": "B",
         "text": "Tiền đề khoa học lịch sử"
@@ -1137,9 +1117,10 @@
       }
     ],
     "correctOptionIds": [
+      "A",
       "C"
     ],
-    "explanation": "Đáp án chính xác theo giáo trình: C.",
+    "explanation": "Đáp án đúng theo giáo trình: A. Tiền đề tư tưởng lý luận và C. Tiền đề khoa học tự nhiên.",
     "difficulty": "hard"
   },
   {
@@ -1641,26 +1622,30 @@
       {
         "id": "item-3",
         "text": "thời kỳ quá độ"
+      },
+      {
+        "id": "item-4",
+        "text": "con đường"
       }
     ],
     "ddTargets": [
       {
         "id": "target-1",
-        "prompt": "Phát biểu 1: Quá độ trực tiếp từ chủ nghĩa tư bản lên chủ nghĩa cộng sản đối với những nước đã trải qua chủ nghĩa tư bản phát triển.",
+        "prompt": "Phát biểu 1: ______ từ chủ nghĩa tư bản lên chủ nghĩa cộng sản đối với những nước đã trải qua chủ nghĩa tư bản phát triển.",
         "correctItemIds": [
           "item-1"
         ]
       },
       {
         "id": "target-2",
-        "prompt": "Phát biểu 2: Quá độ gián tiếp từ chủ nghĩa tư bản lên chủ nghĩa cộng sản đối với những nước chưa trải qua chủ nghĩa tư bản phát triển.",
+        "prompt": "Phát biểu 2: ______ từ chủ nghĩa tư bản lên chủ nghĩa cộng sản đối với những nước chưa trải qua chủ nghĩa tư bản phát triển.",
         "correctItemIds": [
           "item-2"
         ]
       },
       {
         "id": "target-3",
-        "prompt": "Phát biểu 3: Thực chất của thời kỳ quá độ lên chủ nghĩa xã hội là thời kỳ cải biến cách mạng từ xã hội tiền tư bản chủ nghĩa và tư bản chủ nghĩa sang xã hội xã hội chủ nghĩa.",
+        "prompt": "Phát biểu 3: Thực chất của ______ lên chủ nghĩa xã hội là thời kỳ cải biến cách mạng từ xã hội tiền tư bản chủ nghĩa và tư bản chủ nghĩa sang xã hội xã hội chủ nghĩa.",
         "correctItemIds": [
           "item-3"
         ]
@@ -2023,34 +2008,32 @@
   {
     "id": "q-02-027",
     "lessonId": "lesson-02",
-    "type": "multiple_choice",
-    "content": "Phần câu hỏi Đúng / Sai : 1. Việc \"bỏ qua\" chế độ tư bản chủ nghĩa là không kế thừa bất kỳ yếu tố tích cực nào của chủ nghĩa tư bản",
-    "options": [
+    "type": "true_false",
+    "content": "Chọn đáp án (Đúng hoặc Sai) với từng phát biểu sau:",
+    "explanation": "Đáp án quy định theo giáo trình: 1. Sai; 2. Đúng; 3. Sai; 4. Đúng.",
+    "difficulty": "hard",
+    "tfItems": [
       {
-        "id": "A",
-        "text": "ĐúngB. Sai"
+        "id": "1",
+        "statement": "Việc \"bỏ qua\" chế độ tư bản chủ nghĩa là không kế thừa bất kỳ yếu tố tích cực nào của chủ nghĩa tư bản",
+        "correctAnswer": "Sai"
       },
       {
-        "id": "A",
-        "text": "ĐúngB. Sai"
+        "id": "2",
+        "statement": "Nhà nước pháp quyền xã hội chủ nghĩa Việt Nam là nhà nước của nhân dân, do nhân dân, vì nhân dân",
+        "correctAnswer": "Đúng"
       },
       {
-        "id": "A",
-        "text": "SaiB. Đúng"
+        "id": "3",
+        "statement": "Chủ nghĩa xã hội ở Việt Nam không chấp nhận kinh tế tư nhân tồn tại song song với kinh tế nhà nước",
+        "correctAnswer": "Sai"
       },
       {
-        "id": "A",
-        "text": "SaiB. Đúng"
+        "id": "4",
+        "statement": "Việt Nam quá độ lên chủ nghĩa xã hội từ một nền sản xuất nhỏ, bỏ qua chế độ tư bản chủ nghĩa",
+        "correctAnswer": "Đúng"
       }
-    ],
-    "correctOptionIds": [
-      "A",
-      "A",
-      "A",
-      "A"
-    ],
-    "explanation": "Đáp án chính xác theo giáo trình: A, A, A, A.",
-    "difficulty": "hard"
+    ]
   },
   {
     "id": "q-02-028",
@@ -2251,18 +2234,6 @@
       {
         "id": "item-4",
         "text": "Vị trí thống trị"
-      },
-      {
-        "id": "item-5",
-        "text": "Tất yếu khách quan."
-      },
-      {
-        "id": "item-6",
-        "text": "Vị trí thống trị."
-      },
-      {
-        "id": "item-7",
-        "text": "Quá độ gián tiếp."
       }
     ],
     "ddTargets": [
@@ -2270,21 +2241,21 @@
         "id": "target-1",
         "prompt": "1. Quá độ lên chủ nghĩa xã hội bỏ qua chế độ tư bản chủ nghĩa là con đường cách mạng ______.",
         "correctItemIds": [
-          "item-5"
+          "item-3"
         ]
       },
       {
         "id": "target-2",
         "prompt": "2. Quá độ lên chủ nghĩa xã hội bỏ qua chế độ tư bản chủ nghĩa, tức là bỏ qua việc xác lập ______ của quan hệ sản xuất và kiến trúc thượng tầng tư bản chủ nghĩa.",
         "correctItemIds": [
-          "item-6"
+          "item-4"
         ]
       },
       {
         "id": "target-3",
         "prompt": "3. Việt Nam thực hiện ______ đi lên chủ nghĩa xã hội.",
         "correctItemIds": [
-          "item-7"
+          "item-1"
         ]
       }
     ],
@@ -2401,18 +2372,6 @@
       {
         "id": "item-4",
         "text": "Kinh tế thị trường"
-      },
-      {
-        "id": "item-5",
-        "text": "Kinh tế thị trường."
-      },
-      {
-        "id": "item-6",
-        "text": "Nhà nước pháp quyền"
-      },
-      {
-        "id": "item-7",
-        "text": "Quyền con người."
       }
     ],
     "ddTargets": [
@@ -2420,21 +2379,21 @@
         "id": "target-1",
         "prompt": "1. Việt Nam xây dựng nền ______ có sự điều tiết của nhà nước.",
         "correctItemIds": [
-          "item-5"
+          "item-4"
         ]
       },
       {
         "id": "target-2",
         "prompt": "2. Một đặc trưng chính trị của chủ nghĩa xã hội là xây dựng ______ xã hội chủ nghĩa của nhân dân, do nhân dân, vì nhân dân.",
         "correctItemIds": [
-          "item-6"
+          "item-2"
         ]
       },
       {
         "id": "target-3",
         "prompt": "3. Nhà nước pháp quyền xã hội chủ nghĩa Việt Nam tôn trọng, bảo vệ và bảo đảm ______.",
         "correctItemIds": [
-          "item-7"
+          "item-1"
         ]
       }
     ],
@@ -3961,12 +3920,12 @@
     "tfItems": [
       {
         "id": "1",
-        "statement": "Dân chủ xã hội chủ nghĩa là công cụ để giai cấp công nhân thực hiện chuyên chính với các giai cấp khác.→ Đúng 🟢",
+        "statement": "Dân chủ xã hội chủ nghĩa là công cụ để giai cấp công nhân thực hiện chuyên chính với các giai cấp khác.",
         "correctAnswer": "Đúng"
       },
       {
         "id": "2",
-        "statement": "Dân chủ tư sản là hình thức dân chủ gắn với quyền lực chính trị của giai cấp tư sản.→ Đúng 🟢",
+        "statement": "Dân chủ tư sản là hình thức dân chủ gắn với quyền lực chính trị của giai cấp tư sản.",
         "correctAnswer": "Sai"
       }
     ],
@@ -3981,12 +3940,12 @@
     "tfItems": [
       {
         "id": "1",
-        "statement": "Hình thức dân chủ gián tiếp là hình thức thông qua đó, nhân dân bằng hành động trực tiếp của mình thực hiện quyền làm chủ nhà nước và xã hội.→ Sai 🟢",
+        "statement": "Hình thức dân chủ gián tiếp là hình thức thông qua đó, nhân dân bằng hành động trực tiếp của mình thực hiện quyền làm chủ nhà nước và xã hội.",
         "correctAnswer": "Sai"
       },
       {
         "id": "2",
-        "statement": "Chế độ dân chủ nhân dân ở nước ta được xác lập sau Cách mạng Tháng Tám năm 1945.→ Đúng 🟢",
+        "statement": "Chế độ dân chủ nhân dân ở nước ta được xác lập sau Cách mạng Tháng Tám năm 1945.",
         "correctAnswer": "Đúng"
       }
     ],
@@ -5074,22 +5033,22 @@
     "tfItems": [
       {
         "id": "1",
-        "statement": "Nội dung kinh tế là nội dung cơ bản quyết định nhất, là cơ sở vật chất kỹ thuật của liên minh.→ ⭐",
+        "statement": "Nội dung kinh tế là nội dung cơ bản quyết định nhất, là cơ sở vật chất kỹ thuật của liên minh.",
         "correctAnswer": "Đúng"
       },
       {
         "id": "2",
-        "statement": "Tạo sức mạnh tổng hợp là mục tiêu của liên minh giai cấp, tầng lớp ở Việt Nam.→ ⭐",
+        "statement": "Tạo sức mạnh tổng hợp là mục tiêu của liên minh giai cấp, tầng lớp ở Việt Nam.",
         "correctAnswer": "Đúng"
       },
       {
         "id": "3",
-        "statement": "Nội dung văn hóa không liên quan đến nội dung của liên minh giai cấp, tầng lớp.→ ⭐",
+        "statement": "Nội dung văn hóa không liên quan đến nội dung của liên minh giai cấp, tầng lớp.",
         "correctAnswer": "Sai"
       },
       {
         "id": "4",
-        "statement": "Đổi mới hoạt động của Đảng, Nhà nước, Mặt trận Tổ quốc Việt Nam nhằm tăng cường khối liên minh giai cấp, tầng lớp ở Việt Nam.→ ⭐",
+        "statement": "Đổi mới hoạt động của Đảng, Nhà nước, Mặt trận Tổ quốc Việt Nam nhằm tăng cường khối liên minh giai cấp, tầng lớp ở Việt Nam.",
         "correctAnswer": "Đúng"
       }
     ],
@@ -5104,22 +5063,22 @@
     "tfItems": [
       {
         "id": "1",
-        "statement": "Nâng cao dân trí là chính sách hỗ trợ cơ cấu xã hội – giai cấp.→ ⭐",
+        "statement": "Nâng cao dân trí là chính sách hỗ trợ cơ cấu xã hội – giai cấp.",
         "correctAnswer": "Đúng"
       },
       {
         "id": "2",
-        "statement": "Chính sách việc làm không hỗ trợ cơ cấu xã hội – giai cấp.→ ⭐",
+        "statement": "Chính sách việc làm không hỗ trợ cơ cấu xã hội – giai cấp.",
         "correctAnswer": "Sai"
       },
       {
         "id": "3",
-        "statement": "Đội ngũ doanh nhân là tầng lớp mới trong cơ cấu xã hội – giai cấp.→ ⭐",
+        "statement": "Đội ngũ doanh nhân là tầng lớp mới trong cơ cấu xã hội – giai cấp.",
         "correctAnswer": "Đúng"
       },
       {
         "id": "4",
-        "statement": "Cơ cấu xã hội – giai cấp ở Việt Nam không biến đổi.→ ⭐",
+        "statement": "Cơ cấu xã hội – giai cấp ở Việt Nam không biến đổi.",
         "correctAnswer": "Sai"
       }
     ],
@@ -5223,22 +5182,22 @@
     "tfItems": [
       {
         "id": "1",
-        "statement": "Chính sách tôn giáo là chính sách chính hỗ trợ cơ cấu xã hội – giai cấp.→ ⭐",
+        "statement": "Chính sách tôn giáo là chính sách chính hỗ trợ cơ cấu xã hội – giai cấp.",
         "correctAnswer": "Sai"
       },
       {
         "id": "2",
-        "statement": "Đội ngũ trí thức đóng vai trò quan trọng trong cơ cấu xã hội – giai cấp.→ ⭐",
+        "statement": "Đội ngũ trí thức đóng vai trò quan trọng trong cơ cấu xã hội – giai cấp.",
         "correctAnswer": "Đúng"
       },
       {
         "id": "3",
-        "statement": "Giai cấp công nhân là trung tâm trong cơ cấu xã hội – giai cấp ở Việt Nam.→ ⭐",
+        "statement": "Giai cấp công nhân là trung tâm trong cơ cấu xã hội – giai cấp ở Việt Nam.",
         "correctAnswer": "Đúng"
       },
       {
         "id": "4",
-        "statement": "Tầng lớp phụ nữ không tham gia cơ cấu xã hội – giai cấp.→ ⭐",
+        "statement": "Tầng lớp phụ nữ không tham gia cơ cấu xã hội – giai cấp.",
         "correctAnswer": "Sai"
       }
     ],
@@ -6211,18 +6170,6 @@
       {
         "id": "item-6",
         "text": "Cơ sở thờ tự"
-      },
-      {
-        "id": "item-7",
-        "text": "Đáp án:"
-      },
-      {
-        "id": "item-8",
-        "text": "Nguồn gốc của tôn giáo → Kinh tế; Nhận thức; Tâm lý ⭐"
-      },
-      {
-        "id": "item-9",
-        "text": "Yếu tố liên quan đến tôn giáo → Hệ thống tín đồ; Niềm tin; Cơ sở thờ tự ⭐"
       }
     ],
     "ddTargets": [
@@ -6241,10 +6188,7 @@
         "correctItemIds": [
           "item-4",
           "item-5",
-          "item-6",
-          "item-7",
-          "item-8",
-          "item-9"
+          "item-6"
         ]
       }
     ],
@@ -6289,19 +6233,19 @@
     "ddItems": [
       {
         "id": "item-1",
-        "text": "Mê tín dị đoan ⭐"
+        "text": "Mê tín dị đoan"
       },
       {
         "id": "item-2",
-        "text": "Mê muội ⭐"
+        "text": "Mê muội"
       },
       {
         "id": "item-3",
-        "text": "Tôn giáo ⭐"
+        "text": "Tôn giáo"
       },
       {
         "id": "item-4",
-        "text": "Tín ngưỡng ⭐"
+        "text": "Tín ngưỡng"
       }
     ],
     "ddTargets": [
@@ -6405,22 +6349,22 @@
     "tfItems": [
       {
         "id": "1",
-        "statement": "Tôn giáo là đặc trưng chính của dân tộc quốc gia.→ Sai 🟢",
+        "statement": "Tôn giáo là đặc trưng chính của dân tộc quốc gia.",
         "correctAnswer": "Đúng"
       },
       {
         "id": "2",
-        "statement": "Dân tộc (tộc người) có ý thức tự giác tộc người.→ Đúng 🟢",
+        "statement": "Dân tộc (tộc người) có ý thức tự giác tộc người.",
         "correctAnswer": "Đúng"
       },
       {
         "id": "3",
-        "statement": "Tâm lý dân tộc tạo nên bản sắc văn hóa dân tộc.→ Đúng 🟢",
+        "statement": "Tâm lý dân tộc tạo nên bản sắc văn hóa dân tộc.",
         "correctAnswer": "Đúng"
       },
       {
         "id": "4",
-        "statement": "Đấu tranh chống chủ nghĩa Sô-vanh là giải pháp thực hiện bình đẳng dân tộc.→ Đúng 🟢",
+        "statement": "Đấu tranh chống chủ nghĩa Sô-vanh là giải pháp thực hiện bình đẳng dân tộc.",
         "correctAnswer": "Đúng"
       }
     ],
@@ -6435,22 +6379,22 @@
     "tfItems": [
       {
         "id": "1",
-        "statement": "Tôn giáo phản ánh chân thực hiện thực khách quan.→ Sai 🟢",
+        "statement": "Tôn giáo phản ánh chân thực hiện thực khách quan.",
         "correctAnswer": "Đúng"
       },
       {
         "id": "2",
-        "statement": "Khoa học chưa giải thích hết được các hiện tượng là lý do tôn giáo phát triển.→ Đúng 🟢",
+        "statement": "Khoa học chưa giải thích hết được các hiện tượng là lý do tôn giáo phát triển.",
         "correctAnswer": "Đúng"
       },
       {
         "id": "3",
-        "statement": "Nguồn gốc nhận thức của tôn giáo là sự hạn chế hiểu biết của con người.→ Đúng 🟢",
+        "statement": "Nguồn gốc nhận thức của tôn giáo là sự hạn chế hiểu biết của con người.",
         "correctAnswer": "Đúng"
       },
       {
         "id": "4",
-        "statement": "Tín ngưỡng là niềm tin vào lực lượng siêu nhiên.→ Đúng 🟢",
+        "statement": "Tín ngưỡng là niềm tin vào lực lượng siêu nhiên.",
         "correctAnswer": "Đúng"
       }
     ],
@@ -6465,22 +6409,22 @@
     "tfItems": [
       {
         "id": "1",
-        "statement": "Tôn giáo không có lễ nghi bắt buộc.→ Sai 🟢",
+        "statement": "Tôn giáo không có lễ nghi bắt buộc.",
         "correctAnswer": "Đúng"
       },
       {
         "id": "2",
-        "statement": "Tôn trọng tự do tín ngưỡng tôn giáo là quan điểm của chủ nghĩa Mác – Lênin.→ Đúng 🟢",
+        "statement": "Tôn trọng tự do tín ngưỡng tôn giáo là quan điểm của chủ nghĩa Mác – Lênin.",
         "correctAnswer": "Đúng"
       },
       {
         "id": "3",
-        "statement": "Nguồn gốc tâm lý của tôn giáo là sợ hãi trước hiện tượng tự nhiên.→ Đúng 🟢",
+        "statement": "Nguồn gốc tâm lý của tôn giáo là sợ hãi trước hiện tượng tự nhiên.",
         "correctAnswer": "Đúng"
       },
       {
         "id": "4",
-        "statement": "Giáo lý chặt chẽ là đặc trưng của tôn giáo.→ Đúng 🟢",
+        "statement": "Giáo lý chặt chẽ là đặc trưng của tôn giáo.",
         "correctAnswer": "Đúng"
       }
     ],
@@ -6595,22 +6539,6 @@
       {
         "id": "item-4",
         "text": "Bình đẳng dân tộc"
-      },
-      {
-        "id": "item-5",
-        "text": "Phương thức sinh hoạt kinh tế chung"
-      },
-      {
-        "id": "item-6",
-        "text": "Dân tộc tộc người"
-      },
-      {
-        "id": "item-7",
-        "text": "Bình đẳng dân tộc"
-      },
-      {
-        "id": "item-8",
-        "text": "Lãnh thổ"
       }
     ],
     "ddTargets": [
@@ -6618,28 +6546,28 @@
         "id": "target-1",
         "prompt": "Đặc trưng quan trọng nhất của dân tộc là gì?",
         "correctItemIds": [
-          "item-5"
+          "item-3"
         ]
       },
       {
         "id": "target-2",
         "prompt": "Khái niệm dân tộc theo nghĩa hẹp được gọi là gì?",
         "correctItemIds": [
-          "item-6"
+          "item-2"
         ]
       },
       {
         "id": "target-3",
         "prompt": "Nội dung cơ bản của Cương lĩnh dân tộc Mác – Lênin là gì?",
         "correctItemIds": [
-          "item-7"
+          "item-4"
         ]
       },
       {
         "id": "target-4",
         "prompt": "Yếu tố thiêng liêng đối với dân tộc (quốc gia) và từng thành viên dân tộc là gì?",
         "correctItemIds": [
-          "item-8"
+          "item-1"
         ]
       }
     ],
@@ -6654,22 +6582,22 @@
     "tfItems": [
       {
         "id": "1",
-        "statement": "Tôn giáo phản ánh hoang đường, hư ảo hiện thực khách quan.→",
+        "statement": "Tôn giáo phản ánh hoang đường, hư ảo hiện thực khách quan.",
         "correctAnswer": "Đúng"
       },
       {
         "id": "2",
-        "statement": "Mê tín dị đoan là niềm tin mù quáng cần loại bỏ.→",
+        "statement": "Mê tín dị đoan là niềm tin mù quáng cần loại bỏ.",
         "correctAnswer": "Đúng"
       },
       {
         "id": "3",
-        "statement": "Tín ngưỡng có hệ thống giáo lý chặt chẽ.→",
+        "statement": "Tín ngưỡng có hệ thống giáo lý chặt chẽ.",
         "correctAnswer": "Sai"
       },
       {
         "id": "4",
-        "statement": "Nguồn gốc kinh tế - xã hội dẫn đến sự ra đời của tôn giáo.→",
+        "statement": "Nguồn gốc kinh tế - xã hội dẫn đến sự ra đời của tôn giáo.",
         "correctAnswer": "Đúng"
       }
     ],
@@ -6679,34 +6607,32 @@
   {
     "id": "q-05-042",
     "lessonId": "lesson-05",
-    "type": "multiple_choice",
-    "content": "Chọn đáp án Đúng hoặc Sai với từng phát biểu sau: 1. Bình đẳng dân tộc là nội dung Cương lĩnh dân tộc của Mác – Lênin.",
-    "options": [
+    "type": "true_false",
+    "content": "Chọn đáp án Đúng hoặc Sai với từng phát biểu sau:",
+    "explanation": "Đáp án quy định theo giáo trình: 1. Đúng; 2. Sai; 3. Đúng; 4. Đúng.",
+    "difficulty": "hard",
+    "tfItems": [
       {
-        "id": "A",
-        "text": "SaiB. Đúng"
+        "id": "1",
+        "statement": "Bình đẳng dân tộc là nội dung Cương lĩnh dân tộc của Mác – Lênin.",
+        "correctAnswer": "Đúng"
       },
       {
-        "id": "A",
-        "text": "SaiB. Đúng"
+        "id": "2",
+        "statement": "Dân tộc (quốc gia) không cần lãnh thổ chung.",
+        "correctAnswer": "Sai"
       },
       {
-        "id": "A",
-        "text": "ĐúngB. Sai"
+        "id": "3",
+        "statement": "Quyền tự quyết dân tộc bao gồm quyền phân lập thành quốc gia độc lập.",
+        "correctAnswer": "Đúng"
       },
       {
-        "id": "A",
-        "text": "SaiB. Đúng"
+        "id": "4",
+        "statement": "Dân tộc là cộng đồng người có ngôn ngữ riêng và văn hóa đặc thù.",
+        "correctAnswer": "Đúng"
       }
-    ],
-    "correctOptionIds": [
-      "A",
-      "A",
-      "A",
-      "A"
-    ],
-    "explanation": "Đáp án chính xác theo giáo trình: A, A, A, A.",
-    "difficulty": "hard"
+    ]
   },
   {
     "id": "q-05-043",
@@ -6799,22 +6725,22 @@
     "tfItems": [
       {
         "id": "1",
-        "statement": "Cương lĩnh dân tộc của Chủ nghĩa Mác-Lênin không đề cập đến bình đẳng dân tộc →",
+        "statement": "Cương lĩnh dân tộc của Chủ nghĩa Mác-Lênin không đề cập đến bình đẳng dân tộc",
         "correctAnswer": "Sai"
       },
       {
         "id": "2",
-        "statement": "Dân tộc (tộc người) có ngôn ngữ riêng →",
+        "statement": "Dân tộc (tộc người) có ngôn ngữ riêng",
         "correctAnswer": "Đúng"
       },
       {
         "id": "3",
-        "statement": "Lãnh thổ chung là đặc trưng của dân tộc quốc gia →",
+        "statement": "Lãnh thổ chung là đặc trưng của dân tộc quốc gia",
         "correctAnswer": "Đúng"
       },
       {
         "id": "4",
-        "statement": "Quyền tự quyết dân tộc không bao gồm nội dung biểu hiện của dân tộc độc lập tự tài →",
+        "statement": "Quyền tự quyết dân tộc không bao gồm nội dung biểu hiện của dân tộc độc lập tự tài",
         "correctAnswer": "Sai"
       }
     ],
@@ -6862,15 +6788,15 @@
       },
       {
         "id": "item-2",
-        "text": "Lênin về tôn giáo là gì?"
+        "text": "Tôn trọng tự do tín ngưỡng"
       },
       {
         "id": "item-3",
-        "text": "Lênin là gì?"
+        "text": "Phản ánh hư ảo các lực lượng khách quan"
       },
       {
         "id": "item-4",
-        "text": "Lênin coi tín ngưỡng, tôn giáo là một phạm trù thuộc hình thái nào của xã hội?"
+        "text": "Hình thái ý thức xã hội"
       }
     ],
     "ddTargets": [
@@ -6883,21 +6809,21 @@
       },
       {
         "id": "target-2",
-        "prompt": "Quan điểm của chủ nghĩa Mác",
+        "prompt": "Quan điểm của chủ nghĩa Mác - Lênin về tôn giáo là gì?",
         "correctItemIds": [
           "item-2"
         ]
       },
       {
         "id": "target-3",
-        "prompt": "Bản chất của tôn giáo theo chủ nghĩa Mác",
+        "prompt": "Bản chất của tôn giáo theo chủ nghĩa Mác - Lênin là gì?",
         "correctItemIds": [
           "item-3"
         ]
       },
       {
         "id": "target-4",
-        "prompt": "Chủ nghĩa Mác",
+        "prompt": "Chủ nghĩa Mác - Lênin coi tín ngưỡng, tôn giáo là một phạm trù thuộc hình thái nào của xã hội?",
         "correctItemIds": [
           "item-4"
         ]
@@ -7703,22 +7629,22 @@
     "tfItems": [
       {
         "id": "1",
-        "statement": "Hiện nay, độ bền vững của gia đình không bị chi phối bởi các mối quan hệ hòa hợp tình cảm giữa chồng và vợ, cha mẹ và con cái. →",
+        "statement": "Hiện nay, độ bền vững của gia đình không bị chi phối bởi các mối quan hệ hòa hợp tình cảm giữa chồng và vợ, cha mẹ và con cái.",
         "correctAnswer": "Sai"
       },
       {
         "id": "2",
-        "statement": "Hiện nay, kinh tế gia đình đang trở thành một bộ phận quan trọng trong nền kinh tế quốc dân. →",
+        "statement": "Hiện nay, kinh tế gia đình đang trở thành một bộ phận quan trọng trong nền kinh tế quốc dân.",
         "correctAnswer": "Đúng"
       },
       {
         "id": "3",
-        "statement": "Giáo dục gia đình tiếp tục nhấn mạnh sự hy sinh của cá nhân cho cộng đồng. →",
+        "statement": "Giáo dục gia đình tiếp tục nhấn mạnh sự hy sinh của cá nhân cho cộng đồng.",
         "correctAnswer": "Đúng"
       },
       {
         "id": "4",
-        "statement": "Nội dung giáo dục trong gia đình hiện nay chỉ tập trung giáo dục đạo đức. →",
+        "statement": "Nội dung giáo dục trong gia đình hiện nay chỉ tập trung giáo dục đạo đức.",
         "correctAnswer": "Sai"
       }
     ],
@@ -7733,22 +7659,22 @@
     "tfItems": [
       {
         "id": "1",
-        "statement": "Trong gia đình hiện đại, sự bền vững của hôn nhân không phụ thuộc vào các yếu tố tâm lý, tình cảm, kinh tế. →",
+        "statement": "Trong gia đình hiện đại, sự bền vững của hôn nhân không phụ thuộc vào các yếu tố tâm lý, tình cảm, kinh tế.",
         "correctAnswer": "Sai"
       },
       {
         "id": "2",
-        "statement": "Tăng số con mong muốn và tăng nhu cầu nhất thiết phải có con trai của các cặp vợ chồng. →",
+        "statement": "Tăng số con mong muốn và tăng nhu cầu nhất thiết phải có con trai của các cặp vợ chồng.",
         "correctAnswer": "Sai"
       },
       {
         "id": "3",
-        "statement": "Gia đình từ đơn vị kinh tế tự cung tự cấp sang đơn vị kinh tế hàng hoá. →",
+        "statement": "Gia đình từ đơn vị kinh tế tự cung tự cấp sang đơn vị kinh tế hàng hoá.",
         "correctAnswer": "Đúng"
       },
       {
         "id": "4",
-        "statement": "Hiện nay việc sinh đẻ được các gia đình tiến hành một cách chủ động, tự giác. →",
+        "statement": "Hiện nay việc sinh đẻ được các gia đình tiến hành một cách chủ động, tự giác.",
         "correctAnswer": "Đúng"
       }
     ],

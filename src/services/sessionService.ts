@@ -128,10 +128,16 @@ export async function submitQuestionAnswer(
   } else if (question.type === 'drag_drop') {
     const targets = question.ddTargets || [];
     if (targets.length > 0 && ddMatches) {
+      const itemsMap = new Map((question.ddItems || []).map((it) => [it.id, it.text]));
       isCorrect = targets.every((t) => {
         const userMatched = ddMatches[t.id] || [];
+        if (userMatched.length !== t.correctItemIds.length) return false;
         const correctSet = new Set(t.correctItemIds);
-        return userMatched.length === correctSet.size && userMatched.every((id) => correctSet.has(id));
+        if (userMatched.every((id) => correctSet.has(id))) return true;
+        // Text multi-set matching fallback for identical cards
+        const userTexts = userMatched.map((id) => itemsMap.get(id) || id).sort();
+        const correctTexts = t.correctItemIds.map((id) => itemsMap.get(id) || id).sort();
+        return userTexts.every((txt, i) => txt === correctTexts[i]);
       });
     }
   }
